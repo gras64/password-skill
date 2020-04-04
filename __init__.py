@@ -1,4 +1,5 @@
 from mycroft import MycroftSkill, intent_file_handler
+from mycroft.messagebus.message import Message
 
 
 class Password(MycroftSkill):
@@ -12,29 +13,48 @@ class Password(MycroftSkill):
         if self.settings["password"] is None:
             self.log.info("no Password found")
             self.shutdown()
+        self.add_event('recognizer_loop:sleep',
+                   self.handler_sleep)
+        if self.settings["uespassword"] is True:
+            self.bus.emit(Message('recognizer_loop:sleep'))
 
-    def handle_list_skills(self, message):
-        skills = [skill for skill in self.msm.all_skills if not skill.is_local]
-        shuffle(skills)
-        skills = '. '.join(self.clean_name(skill) for skill in skills[:4])
-        skills = skills.replace('skill', '').replace('-', ' ')
-        self.speak_dialog('some.available.skills', dict(skills=skills))
+
+    def handler_sleep(self):
+        self.bus.emit(Message('skillmanager.activate',
+                              {'skill': "Password"}))
+        self.log.info("handler sleep")
+
+
 
     @intent_file_handler('password.intent')
     def handle_password(self, message):
         password = message.data.get("password")
-        if password is self.settings["password"]:
+        self.log.info("found password "+password)
+        self.log.info("erwarte password "+self.settings["password"])
+        if self.settings["password"] in password:
             enable = True
             self.speak_dialog('password')
         else:
             enable = False
-        self.log.info("skill list") #+mycroft.skills.list)
+            self.speak_dialog("wrong.password")
         self.disable_enable(enable)
 
     def disable_enable(self, enable=False):
         if self.settings["uespassword"] is True:
             if enable is True:
                 self.log.info("manage login")
+                self.bus.emit(Message('mycroft.awoken'))
+            else:
+                self.log.info("go sleep")
+                self.bus.emit(Message('recognizer_loop:sleep'))
+        else:
+            self.log.info("password deactivated")
+
+
+    @intent_file_handler('logout.intent')
+    def handle_logout(self, message):
+        enable = False
+        self.disable_enable(enable)
 
     def shutdown(self):
         super(Password, self).shutdown()

@@ -8,21 +8,13 @@
                         "name": "password",
                         "type": "password",
                         "label": "Set your Password",
-                        "value": "",
-                        "placeholder": "Password"
+                        "value": ""
                     },
                     {
                         "name": "usepassword",
                         "type": "checkbox",
                         "label": "do you want to use Password",
                         "value": "false"
-                    },
-                    {
-                        "name": "allowskill",
-                        "type": "text",
-                        "label": "allow this skills",
-                        "playeholder": "mycroft-pairing, mycroft-volume",
-                        "value": "mycroft-pairing, mycroft-volume"
                     }
                 ]
             }
