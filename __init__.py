@@ -9,7 +9,6 @@ class Password(MycroftSkill):
     def initialize(self):
         self.settings["password"] = self.settings.get('password', None)
         self.settings["uespassword"] = self.settings.get('usepassword', False)
-        self.settings["allowskill"] = self.settings.get('allowskill', "")
         if self.settings["password"] is None:
             self.log.info("no Password found")
             self.shutdown()
@@ -29,8 +28,6 @@ class Password(MycroftSkill):
     @intent_file_handler('password.intent')
     def handle_password(self, message):
         password = message.data.get("password")
-        self.log.info("found password "+password)
-        self.log.info("erwarte password "+self.settings["password"])
         if self.settings["password"] in password:
             enable = True
             self.speak_dialog('password')
