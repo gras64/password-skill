@@ -17,6 +17,7 @@ class Password(MycroftSkill):
                    self.handler_sleep)
         if self.settings["uespassword"] is True:
             self.bus.emit(Message('recognizer_loop:sleep'))
+            self.enable = False
 
 
     def handler_sleep(self):
@@ -29,17 +30,23 @@ class Password(MycroftSkill):
     @intent_file_handler('password.intent')
     def handle_password(self, message):
         password = message.data.get("password")
+        if password is None and self.enable is True:
+            self.speak_dialog("say.password")
+            self.bus.emit(Message('recognizer_loop:sleep'))
+        elif password is None:
+            self.log.info("no password found")
+            return
         if self.settings["password"] in password:
-            enable = True
+            self.enable = True
             self.speak_dialog('password')
         else:
-            enable = False
+            self.enable = False
             self.speak_dialog("wrong.password")
-        self.disable_enable(enable)
+        self.disable_enable()
 
-    def disable_enable(self, enable=False):
+    def disable_enable(self):
         if self.settings["uespassword"] is True:
-            if enable is True:
+            if self.enable is True:
                 self.log.info("manage login")
                 self.bus.emit(Message('mycroft.awoken'))
             else:
@@ -51,8 +58,8 @@ class Password(MycroftSkill):
 
     @intent_file_handler('logout.intent')
     def handle_logout(self, message):
-        enable = False
-        self.disable_enable(enable)
+        self.enable = False
+        self.disable_enable()
 
     def test(self):
         self.log.info("test")
