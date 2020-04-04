@@ -9,6 +9,7 @@ class Password(MycroftSkill):
     def initialize(self):
         self.settings["password"] = self.settings.get('password', None)
         self.settings["uespassword"] = self.settings.get('usepassword', False)
+        self.add_event('mycroft.awoken', self.handle_password)
         if self.settings["password"] is None:
             self.log.info("no Password found")
             self.shutdown()
@@ -52,6 +53,9 @@ class Password(MycroftSkill):
     def handle_logout(self, message):
         enable = False
         self.disable_enable(enable)
+
+    def test(self):
+        self.log.info("test")
 
     def shutdown(self):
         super(Password, self).shutdown()
