@@ -1,41 +1,61 @@
 from mycroft import MycroftSkill, intent_file_handler
 from mycroft.messagebus.message import Message
+from mycroft.skills.msm_wrapper import build_msm_config, create_msm
+import time
+import os
 
 
 class Password(MycroftSkill):
+    _msm = None
     def __init__(self):
         MycroftSkill.__init__(self)
 
     def initialize(self):
         self.settings["password"] = self.settings.get('password', None)
         self.settings["uespassword"] = self.settings.get('usepassword', False)
+        self.settings["allowskill"] = self.settings.get('allowskill', "password")
+        self.settings["timeout"] = self.settings.get('timeout', 0)
         if self.settings["password"] is None:
             self.log.info("no Password found")
             self.shutdown()
-        self.remove_event('recognizer_loop:wakeword')
-        self.add_event('recognizer_loop:wakeword', self.handle_password)
-       # self.add_event('recognizer_loop:sleep',
-       #            self.handler_sleep)
         if self.settings["uespassword"] is True:
-            self.bus.emit(Message('recognizer_loop:sleep'))
             self.enable = False
+            self.log.info("go sleep")
+            self.handler_sleep()
+        else:
+            self.enable = True
+    
+    @property
+    def msm(self):
+        if self._msm is None:
+            msm_config = build_msm_config(self.config_core)
+            self._msm = create_msm(msm_config)
 
+        return self._msm
 
     def handler_sleep(self):
-        self.bus.emit(Message('skillmanager.activate',
-                              {'skill': "Password"}))
-        self.log.info("handler sleep")
+        skills = [skill for skill in self.msm.all_skills if skill.is_local]
+        for skill in skills:
+            if not self.settings["allowskill"] in str(skill):
+                folder = os.path.basename(skill.path)
+                try:
+                    if self.enable is False:
+                        self.bus.emit(Message('skillmanager.deactivate',
+                                    {'skill': str(folder)}))
+                    else:
+                        self.bus.emit(Message('skillmanager.activate',
+                                    {'skill': str(folder)}))
+                except TypeError:
+                    self.log.info(skill+ " already done")
 
-
-
+        self.log.info("end list")
+    
     @intent_file_handler('password.intent')
     def handle_password(self, message):
         password = message.data.get("password")
-        self.log.info(password)
-        self.log.info(self.enable)
         if password is None and self.enable is False:
             self.speak_dialog("say.password")
-            self.bus.emit(Message('recognizer_loop:sleep'))
+            #self.bus.emit(Message('recognizer_loop:sleep'))
             return
         elif password is None:
             self.log.info("no password found")
@@ -46,31 +66,14 @@ class Password(MycroftSkill):
         else:
             self.enable = False
             self.speak_dialog("wrong.password")
-        self.disable_enable()
-
-    def disable_enable(self):
-        if self.settings["uespassword"] is True:
-            if self.enable is True:
-                self.log.info("manage login")
-                self.bus.emit(Message('mycroft.awoken'))
-                self.enable = False
-                #self.remove_event('recognizer_loop:wakeword')
-            else:
-                self.log.info("go sleep")
-                self.bus.emit(Message('recognizer_loop:sleep'))
-                self.speak_dialog("logout")
-                self.add_event('recognizer_loop:wakeword', self.handle_password)
-        else:
-            self.log.info("password deactivated")
+        self.handler_sleep()
 
 
     @intent_file_handler('logout.intent')
     def handle_logout(self, message):
         self.enable = False
-        self.disable_enable()
-
-    def test(self):
-        self.log.info("test")
+        self.speak_dialog("logout")
+        self.handler_sleep()
 
     def shutdown(self):
         super(Password, self).shutdown()

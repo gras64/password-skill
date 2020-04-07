@@ -13,8 +13,20 @@
                     {
                         "name": "usepassword",
                         "type": "checkbox",
-                        "label": "do you want to use Password",
+                        "label": "logout on start",
                         "value": "false"
+                    },
+                    {
+                        "name": "allowskill",
+                        "type": "text",
+                        "label": "allow follow skills",
+                        "value": "password"
+                    },
+                    {
+                        "name": "timeout",
+                        "type": "number",
+                        "label": "timeout in minutes",
+                        "value": ""
                     }
                 ]
             }

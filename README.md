@@ -2,8 +2,8 @@
 This skill allow login user
 
 ## About
-Yo can aktivate this skill for user autentivication, you have to enter a password at home.mycroft.ai and activate the function. without login mycroft is set to "go sleep" and activated via your password or sentence
-security is very low cli remains possible.
+Yo can aktivate this skill for user autentivication, you have to enter a password at home.mycroft.ai and activate the function. without login mycroft deactivate all skills and can activate via your password or sentence
+
 
 ## Examples
 * "Login anton"
