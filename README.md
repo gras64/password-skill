@@ -2,7 +2,7 @@
 This skill allow login user
 
 ## About
-Yo can aktivate this skill for user autentivication, you have to enter a password at home.mycroft.ai and activate the function. without login mycroft deactivate all skills and can activate via your password or sentence
+If you can enable this ability to automatically authenticate users, you need to enter a password at home.mycroft.ai and enable the feature. Without login, mycroft deactivates all skills and can be activated using your password or your sentence. you can also set a timeout for logout and you can protect individual skills from being deactivated.
 
 
 ## Examples
@@ -11,8 +11,17 @@ Yo can aktivate this skill for user autentivication, you have to enter a passwor
 * "Sign in password"
 * "logout"
 
+## functions
+* "login and logout"
+* "logout by default"
+* "logout after minutes"
+* "allow individual skills"
+
 ## Credits
 gras64
+
+## To Do
+* "Due to the deactivation of individual skills, the first request takes a few seconds more"
 
 ## Category
 **Configuration**

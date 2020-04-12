@@ -13,13 +13,13 @@
                     {
                         "name": "usepassword",
                         "type": "checkbox",
-                        "label": "logout on start",
+                        "label": "logout by default",
                         "value": "false"
                     },
                     {
                         "name": "allowskill",
                         "type": "text",
-                        "label": "allow follow skills",
+                        "label": "allow skills {password,learning}",
                         "value": "password"
                     },
                     {
