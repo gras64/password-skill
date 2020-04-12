@@ -11,7 +11,7 @@ class Password(MycroftSkill):
         MycroftSkill.__init__(self)
 
     def initialize(self):
-        self.settings["password"] = self.settings.get('password', None)
+        self.settings["password"] = self.settings.get('password', "hallo")
         self.settings["uespassword"] = self.settings.get('usepassword', False)
         self.settings["allowskill"] = self.settings.get('allowskill', "password")
         self.settings["timeout"] = self.settings.get('timeout', 0)
